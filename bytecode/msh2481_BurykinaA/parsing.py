@@ -1,8 +1,7 @@
 from dataclasses import dataclass
-from enum import auto, Enum
-from typing import Union
+from enum import Enum
 
-from lexing import Lexer, Token, TokenType
+from lexing import Lexer, TokenType
 
 
 @dataclass

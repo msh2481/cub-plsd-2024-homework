@@ -59,7 +59,25 @@ The VM supports the following instructions:
 2. Instructions are fetched sequentially, decoded, and executed.
 3. The Stack Pointer (`SP`, `r14`) manages function calls and local storage if applicable.
 
-This specification serves as a formal definition of the VM architecture and instruction set.
+### 6. Comments (Extra feature for Exercises 10 to 12)
+- Comments begin with a '#' character and continue until the end of the line
+- Comments can appear:
+  - At the end of any instruction line
+  - On their own line
+  - Without any required whitespace before the '#'
+- Comments are completely ignored by the lexer and have no effect on program execution
+- Examples:
+  ```
+  LOAD r1, 42  # Load initial value
+  ```
+
+  ```
+  # This is a full line comment
+  ```
+
+  ```
+  STORE r2, r1#No space needed before comment
+  ```
 
 
 

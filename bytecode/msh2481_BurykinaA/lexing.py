@@ -1,7 +1,7 @@
 import re
 from dataclasses import dataclass
 from enum import auto, Enum
-from typing import Callable, List, Optional, Pattern, Tuple
+from typing import Callable, Pattern
 
 
 class TokenType(Enum):
@@ -30,7 +30,7 @@ class TokenType(Enum):
 @dataclass
 class Token:
     type: TokenType
-    value: Optional[str | int] = None
+    value: str | int | None = None
 
     def __repr__(self):
         if self.value is not None:
@@ -45,7 +45,9 @@ class Lexer:
         self.current_char = self.text[0] if text else None
 
         # Define regex patterns for different token types
-        self.rules: List[Tuple[Pattern, Callable[[str], Token]]] = [
+        self.rules: list[tuple[Pattern, Callable[[str], Token]]] = [
+            # Comments - skip
+            (re.compile(r"#[^\n]*"), lambda _: None),
             # Whitespace - skip
             (re.compile(r"[ \t\n]+"), lambda _: None),
             # Instructions
@@ -76,7 +78,7 @@ class Lexer:
 
     def error(self):
         raise Exception(
-            f"Invalid character: {self.current_char} at position {self.pos}"
+            f"Invalid character: {self.current_char} ({ord(self.current_char)}) at position {self.pos}"
         )
 
     def next(self) -> Token:
@@ -109,3 +111,123 @@ class Lexer:
         # Restore position
         self.pos = saved_pos
         return token
+
+
+def test_lexing_1():
+    """Test basic instruction recognition"""
+    print("\n=== Test 1: Basic Instructions ===")
+    text = "CP LOAD STORE ADD MUL SUB READ WRITE JUMP"
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+def test_lexing_2():
+    """Test register recognition"""
+    print("\n=== Test 2: Registers ===")
+    text = "r0 r1 r9 r10 r15"
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+def test_lexing_3():
+    """Test numbers and negative numbers"""
+    print("\n=== Test 3: Numbers ===")
+    text = "42 -17 0 -0 999"
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+def test_lexing_4():
+    """Test conditions"""
+    print("\n=== Test 4: Conditions ===")
+    text = "zero pos neg"
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+def test_lexing_5():
+    """Test whitespace handling including newlines"""
+    print("\n=== Test 5: Whitespace Handling ===")
+    text = """LOAD r1,
+    STORE r2,
+    ADD r3"""  # Note the newlines and spaces
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+def test_lexing_6():
+    """Test complex instruction with multiple components"""
+    print("\n=== Test 6: Complex Instruction ===")
+    text = "LOAD r1, -42\nJUMP zero, r15"
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+def test_lexing_7():
+    """Test peek functionality"""
+    print("\n=== Test 7: Peek Testing ===")
+    text = "ADD r1, r2"
+    lexer = Lexer(text)
+
+    print("Peeked token:", lexer.peek())
+    print("Next token:", lexer.next())
+    print("Peeked token:", lexer.peek())
+    print("Next token:", lexer.next())
+
+
+def test_lexing_8():
+    """Test comment handling"""
+    print("\n=== Test 8: Comments ===")
+    text = """LOAD r1, 42  # Load value into r1
+    STORE r2, r1 # Store it in memory
+    # This is a full-line comment
+    ADD r1, r2, r3#No space before comment
+    """
+    lexer = Lexer(text)
+
+    while True:
+        token = lexer.next()
+        print(token)
+        if token.type == TokenType.EOF:
+            break
+
+
+if __name__ == "__main__":
+    test_lexing_1()
+    test_lexing_2()
+    test_lexing_3()
+    test_lexing_4()
+    test_lexing_5()
+    test_lexing_6()
+    test_lexing_7()
+    test_lexing_8()
