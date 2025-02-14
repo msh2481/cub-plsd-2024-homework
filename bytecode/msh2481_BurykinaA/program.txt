@@ -1,0 +1,8 @@
+# Calculate factorial of input number
+CP 1, r2           # Initialize result to 1
+READ r1            # Read input number
+JUMP zero, r1, 7   # If input is 0, jump to end
+MUL r2, r1, r2     # Multiply result by current number
+SUB r1, 1, r1      # Decrement counter
+JUMP pos, r1, 3    # If counter > 0, continue multiplication
+WRITE r2           # Print result 
